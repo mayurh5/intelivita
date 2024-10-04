@@ -92,11 +92,17 @@ class LeaderboardController extends Controller
     private function recalculateRanks(){
 
         $users = User::orderBy('total_points', 'desc')->get();
-        $rank = 1;
+        $rank = 0;
+        $existPoint = null;
 
-        foreach ($users as $user) {
+        foreach ($users as $key =>  $user) {
+
+            if ($existPoint != $user->total_points) {
+                $rank++;
+            }
             $user->update(['rank' => $rank]);
-            $rank++;
+            $existPoint  = $user->total_points;
+           
         }
     }
 }

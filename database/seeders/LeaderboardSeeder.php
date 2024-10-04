@@ -21,7 +21,6 @@ class LeaderboardSeeder extends Seeder
                 ->count(rand(5, 20)) 
                 ->create(['user_id' => $user->id]);
 
-            // Update total points for each user
             $totalPoints = $user->activities->count() * 20;
             $user->update(['total_points' => $totalPoints]);
         }
@@ -33,11 +32,17 @@ class LeaderboardSeeder extends Seeder
     public function recalculateRanks()
     {
         $users = User::orderBy('total_points', 'desc')->get();
-        $rank = 1;
+        $rank = 0;
+        $existPoint = 0;
 
-        foreach ($users as $user) {
+        foreach ($users as $key =>  $user) {
+
+            if ($existPoint != $user->total_points) {
+                $rank++;
+            }
             $user->update(['rank' => $rank]);
-            $rank++;
+            $existPoint  = $user->total_points;
+           
         }
     }
 }
